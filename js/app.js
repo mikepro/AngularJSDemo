@@ -20,35 +20,16 @@ app.controller('HomeController',function($scope, $location){
     $scope.jumboMessage = "Please select one of the images below to find out what the name of the landmark is.";
 });
 
-app.controller('LoginController',function($scope, $location,$rootScope){
+app.controller('LoginController',function($scope,loginFactory, $location,$rootScope){
     $scope.login = function(){
-        if($scope.username=="mike")
-        {
-            $rootScope.username = $scope.username;
-            $location.path('/home');
-        }
-        else
-        {
-            $scope.errorMessage ={msg:'Could not find user'};
-        }
+        loginFactory.login($scope.username);
     }
 });
 
 
-app.controller('MoreDetailController',function($scope, $routeParams){
+app.controller('MoreDetailController',function($scope, $routeParams,LandmarkDatabase){
    var landmarkName = $routeParams.landmarkName;
-   if(landmarkName=="BigBen")
-    {
-        $scope.detail = {img:'',text:'Lots of info on big ben'};
-    }
-    else if(landmarkName=="Sydney")
-    {
-        $scope.detail = {img:'',text:'Lots of info on the Sydney opera house'};
-    }
-    else if(landmarkName=="Eiffle")
-    {
-        $scope.detail = {img:'',text:'Lots of info on the Eiffle tower'};
-    }
+   $scope.detail= LandmarkDatabase.getLandmarkData(landmarkName);
 });
 
 app.directive('displayLandmarkName', function(){
@@ -68,3 +49,40 @@ app.directive('displayLandmarkName', function(){
     };
 });
 
+app.factory('LandmarkDatabase', function(){
+    return {
+        getLandmarkData: function(landmarkName){
+           var data = {};
+           if(landmarkName=="BigBen")
+            {
+                data = {img:'',text:'Lots of info on big ben'};
+            }
+            else if(landmarkName=="Sydney")
+            {
+                data = {img:'',text:'Lots of info on the Sydney opera house'};
+            }
+            else if(landmarkName=="Eiffle")
+            {
+                data = {img:'',text:'Lots of info on the Eiffle tower'};
+            }
+            return data;
+        }
+    };
+});
+
+app.factory('loginFactory',function($location,$rootScope){
+    return {
+        login: function(username)
+        {
+            if(username=="mike")
+            {
+                $rootScope.username = username;
+                $location.path('/home');
+            }
+            else
+            {
+                $rootScope.errorMessage ={msg:'Could not find user'};
+            }
+        }
+    }
+});
